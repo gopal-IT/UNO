@@ -1,0 +1,80 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;700;900&display=swap');
+
+:root {
+  /* Premium Neon UNO Colors */
+  --uno-red: #ff3366;
+  --uno-blue: #33ccff;
+  --uno-green: #00ff87;
+  --uno-yellow: #ffdf00;
+  --uno-dark: #12121a;
+
+  /* Theme Colors */
+  --bg-color: #0f0f1a;
+  --surface-color: rgba(255, 255, 255, 0.04);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0b0;
+
+  /* Card Dimensions */
+  --card-width: 104px;
+  --card-height: 156px;
+  --card-radius: 14px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow: hidden;
+  background-image: 
+    radial-gradient(circle at 15% 50%, rgba(255, 51, 102, 0.05), transparent 40%),
+    radial-gradient(circle at 85% 30%, rgba(51, 204, 255, 0.05), transparent 40%);
+  background-attachment: fixed;
+}
+
+h1, h2, h3, h4, .count-display, .uno-logo {
+  font-family: 'Outfit', sans-serif;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: var(--surface-color);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Premium Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.25);
+}

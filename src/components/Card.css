@@ -1,0 +1,149 @@
+.uno-card {
+    width: var(--card-width);
+    height: var(--card-height);
+    border-radius: var(--card-radius);
+    background-color: white;
+    border: 5px solid white;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 800;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s;
+    cursor: pointer;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.uno-card:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+}
+
+.uno-card.disabled {
+    filter: brightness(0.6);
+    cursor: not-allowed;
+}
+
+.uno-card.disabled:hover {
+    transform: translateY(-5px);
+}
+
+.uno-card.hidden {
+    background-color: #111;
+    border-color: white;
+    cursor: default;
+}
+
+.uno-card.hidden:hover {
+    transform: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.card-inner-bg {
+    background-color: var(--uno-red);
+    width: 100%;
+    height: 100%;
+    border-radius: calc(var(--card-radius) - 6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-inner {
+    background-color: #d00;
+    width: 80%;
+    height: 50%;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(-25deg);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.uno-logo {
+    font-size: 1.2rem;
+    color: var(--uno-yellow);
+    text-shadow: 2px 2px 0 #000;
+    transform: rotate(25deg);
+    letter-spacing: 2px;
+}
+
+.color-red {
+    background-color: var(--uno-red);
+}
+
+.color-blue {
+    background-color: var(--uno-blue);
+}
+
+.color-green {
+    background-color: var(--uno-green);
+}
+
+.color-yellow {
+    background-color: var(--uno-yellow);
+}
+
+.color-wild {
+    background: linear-gradient(135deg, var(--uno-red) 25%, var(--uno-blue) 25%, var(--uno-blue) 50%, var(--uno-green) 50%, var(--uno-green) 75%, var(--uno-yellow) 75%);
+}
+
+.card-center {
+    background: white;
+    color: inherit;
+    width: 75%;
+    height: 55%;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(-15deg);
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+.color-red .card-center {
+    color: var(--uno-red);
+}
+
+.color-blue .card-center {
+    color: var(--uno-blue);
+}
+
+.color-green .card-center {
+    color: var(--uno-green);
+}
+
+.color-yellow .card-center {
+    color: var(--uno-yellow);
+}
+
+.color-wild .card-center {
+    color: #222;
+}
+
+.card-center span {
+    font-size: 2.8rem;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
+}
+
+.card-corner {
+    position: absolute;
+    font-size: 1.2rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.top-left {
+    top: 5px;
+    left: 8px;
+}
+
+.bottom-right {
+    bottom: 5px;
+    right: 8px;
+    transform: rotate(180deg);
+}

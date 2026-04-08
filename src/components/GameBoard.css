@@ -1,0 +1,453 @@
+.game-board {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle, var(--active-color) 0%, var(--bg-color) 70%);
+    transition: background 0.8s ease;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.quit-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.4);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 10px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    backdrop-filter: blur(5px);
+    transition: all 0.2s ease;
+    z-index: 100;
+}
+
+.quit-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.log-toggle-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.4);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 10px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    backdrop-filter: blur(5px);
+    transition: all 0.2s ease;
+    z-index: 1000;
+}
+
+.log-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.table-area {
+    position: relative;
+    width: 65%;
+    min-width: 800px;
+    height: 85vh;
+    border-radius: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
+}
+
+.player {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.5s ease;
+}
+
+.player-info {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 15px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    z-index: 20;
+}
+
+.card-count {
+    background: #444;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+}
+
+.your-turn-badge {
+    background: var(--uno-green);
+    color: white;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    animation: pulse 1.5s infinite;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(85, 170, 85, 0.7);
+    }
+
+    70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(85, 170, 85, 0);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(85, 170, 85, 0);
+    }
+}
+
+.bot-hand {
+    display: flex;
+    transform: scale(0.65);
+    transform-origin: center top;
+}
+
+/* Dynamic positions for scalable bots */
+.top {
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.top-left {
+    top: -20px;
+    left: -10px;
+}
+
+.top-right {
+    top: -20px;
+    right: -10px;
+}
+
+.left {
+    left: -140px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.right {
+    right: -140px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.left-low {
+    left: -100px;
+    bottom: 10%;
+}
+
+.left-high {
+    left: -100px;
+    top: 10%;
+}
+
+.right-low {
+    right: -100px;
+    bottom: 10%;
+}
+
+.right-high {
+    right: -100px;
+    top: 10%;
+}
+
+.bottom.human {
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Rotations based on position */
+.left .bot-hand,
+.left-high .bot-hand,
+.left-low .bot-hand {
+    transform: scale(0.65) rotate(90deg) translateX(30px);
+}
+
+.right .bot-hand,
+.right-high .bot-hand,
+.right-low .bot-hand {
+    transform: scale(0.65) rotate(-90deg) translateX(30px);
+}
+
+.top .bot-hand,
+.top-left .bot-hand,
+.top-right .bot-hand {
+    transform: scale(0.65) rotate(180deg) translateX(-30px);
+}
+
+.bot-hand.vertical {
+    flex-direction: column;
+    justify-content: center;
+}
+
+.human-hand {
+    display: flex;
+    justify-content: center;
+    padding-top: 10px;
+}
+
+.grouped-card-wrapper {
+    position: relative;
+    transition: transform 0.2s;
+}
+
+.grouped-card-wrapper:hover {
+    z-index: 100 !important;
+}
+
+.card-badge {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    background: linear-gradient(135deg, var(--uno-red), #990000);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 900;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    border: 3px solid white;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.human-hand .uno-card:hover {
+    z-index: 100 !important;
+}
+
+.center-piles {
+    display: flex;
+    gap: 50px;
+    align-items: center;
+    position: relative;
+    z-index: 15;
+}
+
+.draw-pile {
+    position: relative;
+    cursor: pointer;
+}
+
+.draw-pile:hover .uno-card {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(255, 255, 255, 0.1);
+}
+
+.pile-text {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.8);
+    pointer-events: none;
+    text-shadow: 1px 1px 0 black;
+}
+
+/* The throwing animation magic */
+.animating-card-overlay {
+    position: absolute;
+    left: 170px;
+    z-index: 1000;
+    pointer-events: none;
+    animation: throwCard 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes throwCard {
+    from {
+        transform: translate(var(--start-x), var(--start-y)) scale(0.5) rotate(var(--start-rot));
+        opacity: 0.5;
+    }
+
+    to {
+        transform: translate(0, 0) scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+.action-indicator {
+    position: absolute;
+    bottom: -80px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.turn-arrow {
+    font-size: 2.5rem;
+    color: white;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.active-color-badge {
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-size: 1rem;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    border: 2px solid white;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Toggleable Action Log */
+.action-log {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    width: 280px;
+    height: 350px;
+    padding: 20px;
+    overflow-y: hidden;
+    background: rgba(10, 10, 20, 0.8) !important;
+    border-left: 4px solid var(--uno-red);
+    transform: translateX(350px);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 999;
+    border-radius: 15px;
+}
+
+.action-log.visible {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.action-log h3 {
+    margin-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 8px;
+    font-size: 1.2rem;
+    color: var(--uno-yellow);
+}
+
+.action-log ul {
+    list-style: none;
+    font-size: 0.95rem;
+}
+
+.action-log li {
+    margin-bottom: 10px;
+    animation: slideIn 0.4s ease-out;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px;
+    border-radius: 8px;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Modals */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.color-selector,
+.game-over-modal {
+    padding: 50px;
+    text-align: center;
+    background: rgba(20, 20, 30, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+.color-selector h2 {
+    margin-bottom: 10px;
+    font-size: 2rem;
+}
+
+.color-buttons {
+    display: flex;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.color-btn {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 6px solid #fff;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5), 0 5px 15px rgba(0, 0, 0, 0.4);
+}
+
+.color-btn:hover {
+    transform: scale(1.15);
+    border-color: #fff;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.3), 0 10px 25px rgba(0, 0, 0, 0.6);
+}
+
+.play-again-btn {
+    margin-top: 30px;
+    padding: 16px 40px;
+    font-size: 1.4rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--uno-red), var(--uno-yellow));
+    color: white;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.play-again-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.6);
+}
