@@ -51,5 +51,6 @@ Serving as the completely immutable single source of truth, this massive custom 
    npm run dev
    ```
 4. Access the fully playable game cleanly inside your browser immediately at:
-   [http://localhost:5173/](http://localhost:5173/)
+   [(https://uno-beige.vercel.app/)]
+   
 >>>>>>> a495b09 (Applied .gitignore)
