@@ -298,7 +298,7 @@
 
 .action-indicator {
     position: absolute;
-    bottom: -80px;
+    bottom: -100px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -450,4 +450,328 @@
 .play-again-btn:hover {
     transform: translateY(-3px) scale(1.05);
     box-shadow: 0 12px 25px rgba(0, 0, 0, 0.6);
+}
+
+/* ═══════════════════════════════════════════
+   TABLET  (768px – 1024px)
+   Scaled-down oval layout still works here
+═══════════════════════════════════════════ */
+@media (max-width: 1024px) {
+    .table-area {
+        width: 80%;
+        min-width: 0;
+        height: 82vh;
+    }
+
+    .left  { left:  -110px; }
+    .right { right: -110px; }
+    .left-low, .left-high  { left:  -80px; }
+    .right-low, .right-high { right: -80px; }
+
+    .top { top: -45px; }
+
+    .player-info {
+        font-size: 0.9rem;
+        padding: 5px 12px;
+        gap: 8px;
+    }
+
+    .center-piles { gap: 35px; }
+
+    .action-log {
+        width: 240px;
+    }
+}
+
+/* ═══════════════════════════════════════════
+   MOBILE  (≤ 767px)
+   Full vertical stack layout
+═══════════════════════════════════════════ */
+@media (max-width: 767px) {
+
+    /* ── Game board shell ── */
+    .game-board {
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        padding: 60px 8px 12px;   /* top-pad leaves room for the two buttons */
+        height: auto;
+        min-height: 100vh;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    /* ── Header buttons ── */
+    .quit-btn {
+        top: 10px;
+        left: 10px;
+        padding: 7px 12px;
+        font-size: 0.78rem;
+        border-radius: 10px;
+    }
+
+    .log-toggle-btn {
+        top: 10px;
+        right: 10px;
+        padding: 7px 12px;
+        font-size: 0.78rem;
+        border-radius: 10px;
+    }
+
+    /* ── Table area → flex-wrap column ── */
+    .table-area {
+        position: relative;
+        width: 100%;
+        min-width: 0;
+        height: auto;
+        border-radius: 20px;
+        /* switch from oval absolute layout to wrapping flex */
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 6px;
+        padding: 10px 8px;
+    }
+
+    /* ── Bots: reset ALL absolute positions, display inline ── */
+    .player.bot,
+    .player.top,
+    .player.top-left,
+    .player.top-right,
+    .player.left,
+    .player.right,
+    .player.left-low,
+    .player.left-high,
+    .player.right-low,
+    .player.right-high {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: none !important;
+        /* Each bot takes roughly half the row */
+        flex: 1 1 calc(50% - 6px);
+        max-width: calc(50% - 6px);
+        min-width: 100px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 4px;
+    }
+
+    /* ── Bot hand: uniform compact scale, no rotation ── */
+    .bot-hand {
+        transform: scale(0.55) !important;
+        transform-origin: center top;
+    }
+
+    .left .bot-hand,
+    .left-high .bot-hand,
+    .left-low .bot-hand,
+    .right .bot-hand,
+    .right-high .bot-hand,
+    .right-low .bot-hand,
+    .top .bot-hand,
+    .top-left .bot-hand,
+    .top-right .bot-hand {
+        transform: scale(0.55) !important;
+        transform-origin: center top;
+    }
+
+    /* ── Center piles: forced to its own full-width row ── */
+    .center-piles {
+        order: 10;
+        flex: 0 0 100%;
+        gap: 18px;
+        padding: 8px 0;
+    }
+
+    .pile-text {
+        top: -28px;
+        font-size: 0.72rem;
+        letter-spacing: 1px;
+    }
+
+    /* ── Action indicator: switch from absolute to relative flow ── */
+    .action-indicator {
+        position: relative;
+        bottom: auto;
+        left: auto;
+        transform: none;
+        flex: 0 0 100%;
+        margin-top: 6px;
+        gap: 6px;
+    }
+
+    .turn-arrow { font-size: 1.8rem; }
+
+    .active-color-badge {
+        font-size: 0.8rem;
+        padding: 4px 10px;
+    }
+
+    /* ── Human player: full-width row, below center ── */
+    .bottom.human {
+        position: relative !important;
+        bottom: auto !important;
+        left: auto !important;
+        transform: none !important;
+        order: 20;
+        flex: 0 0 100%;
+        width: 100%;
+        align-items: flex-start;
+    }
+
+    /* ── Human hand: horizontally scrollable strip ── */
+    .human-hand {
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: visible;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        padding: 8px 4px 16px;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+    }
+
+    /* Override the inline margin-left overlap on mobile to a tighter value */
+    .human-hand .grouped-card-wrapper {
+        margin-left: -28px !important;
+        scroll-snap-align: start;
+    }
+
+    .human-hand .grouped-card-wrapper:first-child {
+        margin-left: 0 !important;
+    }
+
+    /* Hover lift: smaller on mobile (touch) */
+    .uno-card:hover {
+        transform: translateY(-8px);
+    }
+
+    /* ── Player info badge ── */
+    .player-info {
+        font-size: 0.78rem;
+        padding: 4px 10px;
+        gap: 6px;
+        margin-bottom: 8px;
+    }
+
+    .your-turn-badge {
+        font-size: 0.72rem;
+        padding: 2px 7px;
+    }
+
+    .card-count {
+        font-size: 0.8rem;
+        padding: 1px 6px;
+    }
+
+    .card-badge {
+        width: 24px;
+        height: 24px;
+        font-size: 0.85rem;
+        top: -8px;
+        right: -8px;
+        border-width: 2px;
+    }
+
+    /* ── Action log panel ── */
+    .action-log {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 50vh;
+        border-radius: 20px 20px 0 0;
+        transform: translateY(100%);
+        border-left: none;
+        border-top: 4px solid var(--uno-red);
+    }
+
+    .action-log.visible {
+        transform: translateY(0);
+    }
+
+    /* ── Modals ── */
+    .color-selector,
+    .game-over-modal {
+        padding: 28px 20px;
+        width: 90vw;
+        max-width: 400px;
+    }
+
+    .color-selector h2 {
+        font-size: 1.4rem;
+    }
+
+    .color-buttons {
+        gap: 12px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .color-btn {
+        width: 70px;
+        height: 70px;
+        border-width: 4px;
+    }
+
+    .play-again-btn {
+        padding: 12px 28px;
+        font-size: 1.1rem;
+        margin-top: 20px;
+    }
+
+    /* Animating card overlay — keep it but reposition for mobile */
+    .animating-card-overlay {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+/* ═══════════════════════════════════════════
+   SMALL PHONES  (≤ 420px)
+═══════════════════════════════════════════ */
+@media (max-width: 420px) {
+    .game-board {
+        padding-top: 55px;
+    }
+
+    .quit-btn,
+    .log-toggle-btn {
+        padding: 6px 10px;
+        font-size: 0.72rem;
+    }
+
+    .player.bot,
+    .player.top,
+    .player.top-left,
+    .player.top-right,
+    .player.left,
+    .player.right,
+    .player.left-low,
+    .player.left-high,
+    .player.right-low,
+    .player.right-high {
+        flex: 1 1 calc(50% - 6px);
+        min-width: 80px;
+    }
+
+    .center-piles { gap: 12px; }
+
+    .color-btn {
+        width: 58px;
+        height: 58px;
+    }
+
+    .human-hand .grouped-card-wrapper {
+        margin-left: -22px !important;
+    }
 }

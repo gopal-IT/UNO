@@ -15,10 +15,37 @@
   --text-primary: #ffffff;
   --text-secondary: #a0a0b0;
 
-  /* Card Dimensions */
+  /* Card Dimensions — Desktop */
   --card-width: 104px;
   --card-height: 156px;
   --card-radius: 14px;
+}
+
+/* ── Tablet ─────────────────────────────── */
+@media (max-width: 1024px) {
+  :root {
+    --card-width: 86px;
+    --card-height: 129px;
+    --card-radius: 12px;
+  }
+}
+
+/* ── Mobile ─────────────────────────────── */
+@media (max-width: 767px) {
+  :root {
+    --card-width: 70px;
+    --card-height: 105px;
+    --card-radius: 10px;
+  }
+}
+
+/* ── Small phones ───────────────────────── */
+@media (max-width: 420px) {
+  :root {
+    --card-width: 60px;
+    --card-height: 90px;
+    --card-radius: 8px;
+  }
 }
 
 * {
@@ -39,6 +66,13 @@ body {
   background-attachment: fixed;
 }
 
+@media (max-width: 767px) {
+  body {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+}
+
 h1, h2, h3, h4, .count-display, .uno-logo {
   font-family: 'Outfit', sans-serif;
 }
@@ -48,6 +82,13 @@ h1, h2, h3, h4, .count-display, .uno-logo {
   height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+@media (max-width: 767px) {
+  #root {
+    height: auto;
+    min-height: 100vh;
+  }
 }
 
 /* Glassmorphism utility */
