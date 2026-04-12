@@ -71,12 +71,11 @@ export const GameBoard = ({ playerCount, startingCards, onQuit, gameProp }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [game.turnIndex, game.players, game.gameOver, game.colorSelectorVisible, game.hasDrawnThisTurn, game.isOnline]);
 
-    if (!game.players || game.players.length === 0) return <div className="loading">Loading Game...</div>;
-
     // In online mode, we need to rotate players so the current player is at index 0 (bottom)
     const selfIndex = game.isOnline ? game.playerIndex : 0;
     
     const rotatedPlayers = useMemo(() => {
+        if (!game.players) return [];
         const p = [...game.players];
         const rotated = [];
         for (let i = 0; i < p.length; i++) {
@@ -84,6 +83,9 @@ export const GameBoard = ({ playerCount, startingCards, onQuit, gameProp }) => {
         }
         return rotated;
     }, [game.players, selfIndex]);
+
+    if (!game.players || game.players.length === 0) return <div className="loading">Loading Game...</div>;
+
 
     const humanPlayer = rotatedPlayers[0];
     const otherPlayers = rotatedPlayers.slice(1);

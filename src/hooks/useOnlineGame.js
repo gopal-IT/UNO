@@ -155,7 +155,7 @@ export const useOnlineGame = () => {
         setPendingWildCard,
         animatingCard,
         setHasDrawnThisTurn: () => {},
-        nextTurn: () => {},
+        nextTurn: drawCard,
         addLog: (msg) => {},
         initializeGame: () => {},
         isOnline: true,
