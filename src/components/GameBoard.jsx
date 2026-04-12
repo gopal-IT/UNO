@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useGame } from '../hooks/useGame';
 import { getBotMove, getBestBotColor } from '../utils/botLogic';
 import { canPlayCard } from '../utils/gameLogic';
@@ -6,6 +6,7 @@ import { Card } from './Card';
 import './GameBoard.css';
 
 const groupCards = (cards) => {
+    if (!cards) return [];
     const grouped = [];
     const map = new Map();
     cards.forEach((card, index) => {
@@ -22,17 +23,21 @@ const groupCards = (cards) => {
     return grouped;
 };
 
-export const GameBoard = ({ playerCount, startingCards, onQuit }) => {
-    const game = useGame(playerCount, startingCards);
+export const GameBoard = ({ playerCount, startingCards, onQuit, gameProp }) => {
+    const offlineGame = useGame(playerCount, startingCards);
+    const game = gameProp || offlineGame;
     const [showLog, setShowLog] = useState(false);
 
     useEffect(() => {
-        game.initializeGame();
+        if (!gameProp) {
+            game.initializeGame();
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [game.initializeGame]);
+    }, [game.initializeGame, !!gameProp]);
 
+    // Bot logic - only for offline mode
     useEffect(() => {
-        if (game.gameOver || game.colorSelectorVisible) return;
+        if (game.isOnline || game.gameOver || game.colorSelectorVisible) return;
 
         const currentPlayer = game.players[game.turnIndex];
         if (currentPlayer && currentPlayer.isBot && !currentPlayer.finishedRank) {
@@ -64,40 +69,54 @@ export const GameBoard = ({ playerCount, startingCards, onQuit }) => {
             return () => clearTimeout(timer);
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [game.turnIndex, game.players, game.gameOver, game.colorSelectorVisible, game.hasDrawnThisTurn]);
+    }, [game.turnIndex, game.players, game.gameOver, game.colorSelectorVisible, game.hasDrawnThisTurn, game.isOnline]);
 
-    if (game.players.length === 0) return <div className="loading">Loading Deck...</div>;
+    if (!game.players || game.players.length === 0) return <div className="loading">Loading Game...</div>;
 
-    const humanPlayer = game.players[0];
+    // In online mode, we need to rotate players so the current player is at index 0 (bottom)
+    const selfIndex = game.isOnline ? game.playerIndex : 0;
+    
+    const rotatedPlayers = useMemo(() => {
+        const p = [...game.players];
+        const rotated = [];
+        for (let i = 0; i < p.length; i++) {
+            rotated.push(p[(selfIndex + i) % p.length]);
+        }
+        return rotated;
+    }, [game.players, selfIndex]);
+
+    const humanPlayer = rotatedPlayers[0];
+    const otherPlayers = rotatedPlayers.slice(1);
     const topCard = game.discardPile[game.discardPile.length - 1];
-    const bots = game.players.slice(1);
 
+    const currentActualPlayerCount = game.players.length;
     const botLayout = {
+        2: ['top'],
         3: ['left', 'right'],
         4: ['left', 'top', 'right'],
         5: ['left-low', 'top-left', 'top-right', 'right-low'],
         6: ['left-low', 'left-high', 'top', 'right-high', 'right-low']
-    }[playerCount] || [];
+    }[currentActualPlayerCount] || [];
 
     const handlePlayerPlayCard = (cardIndex) => {
-        if (game.turnIndex !== 0) return;
+        if (game.turnIndex !== selfIndex) return;
         const card = humanPlayer.cards[cardIndex];
         if (!canPlayCard(card, topCard, game.activeColor, game.pendingDrawCount, game.pendingDrawType)) return;
-        game.playCard(0, cardIndex);
+        game.playCard(selfIndex, cardIndex);
     };
 
     const handlePlayerDrawCard = () => {
-        if (game.turnIndex !== 0) return;
+        if (game.turnIndex !== selfIndex) return;
         if (game.pendingDrawCount > 0) {
-            game.acceptPenalty(0);
+            game.acceptPenalty(selfIndex);
         } else {
             if (game.hasDrawnThisTurn) {
-                game.addLog(`You passed`);
+                if (!game.isOnline) game.addLog(`You passed`);
                 game.nextTurn();
             } else {
-                game.addLog(`You drew a card`);
-                game.drawCard(0, 1);
-                game.setHasDrawnThisTurn(true);
+                if (!game.isOnline) game.addLog(`You drew a card`);
+                game.drawCard(selfIndex, 1);
+                game.setHasDrawnThisTurn?.(true);
             }
         }
     };
@@ -111,10 +130,13 @@ export const GameBoard = ({ playerCount, startingCards, onQuit }) => {
         }
     };
 
-    const getAnimationStartVars = (playerIndex) => {
-        if (playerIndex === 0) return { '--start-x': '0px', '--start-y': '400px', '--start-rot': '0deg' };
+    const getAnimationStartVars = (fromPlayerIdx) => {
+        // Map back from global index to rotated index
+        const rotatedIdx = (fromPlayerIdx - selfIndex + currentActualPlayerCount) % currentActualPlayerCount;
+        
+        if (rotatedIdx === 0) return { '--start-x': '0px', '--start-y': '400px', '--start-rot': '0deg' };
 
-        const layout = botLayout[playerIndex - 1];
+        const layout = botLayout[rotatedIdx - 1];
         if (!layout) return { '--start-x': '0px', '--start-y': '0px', '--start-rot': '0deg' };
 
         if (layout.includes('left')) return { '--start-x': '-450px', '--start-y': '0px', '--start-rot': '90deg' };
@@ -127,28 +149,29 @@ export const GameBoard = ({ playerCount, startingCards, onQuit }) => {
 
     return (
         <div className="game-board" style={{ '--active-color': `var(--uno-${game.activeColor === 'wild' ? 'dark' : game.activeColor})` }}>
-            <button className="quit-btn" onClick={onQuit}>Quit to Menu</button>
+            <button className="quit-btn" onClick={onQuit}>{game.isOnline ? 'Leave Game' : 'Quit to Menu'}</button>
             <button className="log-toggle-btn" onClick={() => setShowLog(!showLog)}>
                 {showLog ? 'Hide Logs' : '📜 Show Logs'}
             </button>
 
             <div className="table-area glass">
 
-                {bots.map((bot, index) => {
+                {otherPlayers.map((player, index) => {
                     const positionClass = botLayout[index] || 'top';
                     const isVerticalLayout = positionClass.includes('high') || positionClass.includes('low') || positionClass === 'left' || positionClass === 'right';
+                    const isTurn = game.players[game.turnIndex].id === player.id;
 
                     return (
-                        <div key={bot.id} className={`player bot ${positionClass} ${bot.finishedRank ? 'finished' : ''}`} style={{ opacity: bot.finishedRank ? 0.6 : 1 }}>
+                        <div key={player.id} className={`player bot ${positionClass} ${player.finishedRank ? 'finished' : ''} ${isTurn ? 'active-turn' : ''}`}>
                             <div className="player-info">
-                                <span>{bot.name}</span>
-                                {bot.finishedRank && <span className="finished-badge" style={{ background: 'gold', color: 'black', padding: '2px 8px', borderRadius: '10px', marginLeft: '8px', fontWeight: 'bold' }}>#{bot.finishedRank}</span>}
+                                <span>{player.name} {isTurn && '✨'}</span>
+                                {player.finishedRank && <span className="finished-badge" style={{ background: 'gold', color: 'black', padding: '2px 8px', borderRadius: '10px', marginLeft: '8px', fontWeight: 'bold' }}>#{player.finishedRank}</span>}
                             </div>
-                            {!bot.finishedRank && (
+                            {!player.finishedRank && (
                                 <div className={`bot-hand ${isVerticalLayout ? 'vertical' : ''}`}>
                                     <div className="grouped-card-wrapper">
                                         <Card hidden />
-                                        <div className="card-badge" style={{ transform: 'scale(1.2)' }}>{bot.cards.length}</div>
+                                        <div className="card-badge" style={{ transform: 'scale(1.2)' }}>{player.cards?.length ?? player.cardCount ?? 0}</div>
                                     </div>
                                 </div>
                             )}
@@ -161,7 +184,7 @@ export const GameBoard = ({ playerCount, startingCards, onQuit }) => {
                     <div className={`draw-pile ${game.pendingDrawCount > 0 ? 'attacked' : ''}`} onClick={handlePlayerDrawCard}>
                         <Card hidden card={{}} />
                         <span className="pile-text" style={{ color: game.pendingDrawCount > 0 ? '#ff5555' : 'rgba(255,255,255,0.8)' }}>
-                            {game.pendingDrawCount > 0 ? `+${game.pendingDrawCount}` : (game.hasDrawnThisTurn ? 'PASS' : `DRAW (${game.deck.length})`)}
+                            {game.pendingDrawCount > 0 ? `+${game.pendingDrawCount}` : (game.hasDrawnThisTurn ? 'PASS' : `DRAW`)}
                         </span>
                     </div>
                     <div className="discard-pile">
@@ -184,11 +207,11 @@ export const GameBoard = ({ playerCount, startingCards, onQuit }) => {
                 </div>
 
                 {/* Human Player (Bottom) */}
-                <div className={`player bottom human ${humanPlayer.finishedRank ? 'finished' : ''}`}>
+                <div className={`player bottom human ${humanPlayer.finishedRank ? 'finished' : ''} ${game.turnIndex === selfIndex ? 'active-turn' : ''}`}>
                     <div className="player-info" style={{ opacity: humanPlayer.finishedRank ? 0.8 : 1 }}>
-                        <span>Your Hand {!game.gameOver && game.turnIndex === 0 && <span className="your-turn-badge">YOUR TURN</span>}</span>
+                        <span>Your Hand {game.turnIndex === selfIndex && <span className="your-turn-badge">YOUR TURN</span>}</span>
                         {humanPlayer.finishedRank && <span className="finished-badge" style={{ background: 'gold', color: 'black', padding: '2px 8px', borderRadius: '10px', marginLeft: '8px', fontWeight: 'bold' }}>#{humanPlayer.finishedRank} SPECTATING</span>}
-                        {game.pendingDrawCount > 0 && game.turnIndex === 0 && <span className="your-turn-badge" style={{ background: 'red' }}>UNDER ATTACK (+{game.pendingDrawCount})</span>}
+                        {game.pendingDrawCount > 0 && game.turnIndex === selfIndex && <span className="your-turn-badge" style={{ background: 'red' }}>UNDER ATTACK (+{game.pendingDrawCount})</span>}
                     </div>
                     {!humanPlayer.finishedRank && (
                         <div className="human-hand">
@@ -198,7 +221,7 @@ export const GameBoard = ({ playerCount, startingCards, onQuit }) => {
                                     <div key={group.card.id} className="grouped-card-wrapper" style={{ marginLeft: uiIdx === 0 ? 0 : '-50px', zIndex: uiIdx }}>
                                         <Card
                                             card={group.card}
-                                            disabled={game.turnIndex !== 0 || !isCardPlayable}
+                                            disabled={game.turnIndex !== selfIndex || !isCardPlayable}
                                             onClick={() => handlePlayerPlayCard(group.indices[0])}
                                         />
                                         {group.count > 1 && (
@@ -216,7 +239,7 @@ export const GameBoard = ({ playerCount, startingCards, onQuit }) => {
             <div className={`action-log glass ${showLog ? 'visible' : ''}`}>
                 <h3>Game Log</h3>
                 <ul>
-                    {game.log.map((l, i) => <li key={i}>{l}</li>)}
+                    {game.log?.map((l, i) => <li key={i}>{l}</li>)}
                 </ul>
             </div>
 
@@ -249,18 +272,27 @@ export const GameBoard = ({ playerCount, startingCards, onQuit }) => {
                                     padding: '10px 20px',
                                     borderRadius: '10px',
                                     background: 'rgba(0,0,0,0.4)',
-                                    fontWeight: p.id === 0 ? '900' : 'normal',
-                                    color: p.id === 0 ? 'var(--uno-yellow)' : 'white',
-                                    borderLeft: p.id === 0 ? '5px solid var(--uno-yellow)' : '5px solid transparent'
+                                    fontWeight: p.id === selfIndex ? '900' : 'normal',
+                                    color: p.id === selfIndex ? 'var(--uno-yellow)' : 'white',
+                                    borderLeft: p.id === selfIndex ? '5px solid var(--uno-yellow)' : '5px solid transparent'
                                 }}>
                                     <span style={{ color: '#ccc', marginRight: '15px' }}>#{p.finishedRank || game.players.length}</span>
                                     {p.name} {p.finishedRank === 1 ? ' 👑' : ''}
                                 </div>
                             ))}
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
-                            <button className="play-again-btn" style={{ marginTop: 0 }} onClick={game.initializeGame}>Play Again</button>
-                            <button className="play-again-btn" onClick={onQuit} style={{ marginTop: 0, background: 'rgba(0,0,0,0.5)', border: '2px solid rgba(255,255,255,0.2)' }}>Menu</button>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
+                            {game.isOnline && game.rematchVotes && (
+                                <p style={{ color: '#aaa', margin: 0 }}>
+                                    Rematch Votes: {game.rematchVotes.votes}/{game.rematchVotes.needed}
+                                </p>
+                            )}
+                            <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
+                                <button className="play-again-btn" style={{ marginTop: 0 }} onClick={game.isOnline ? game.rematch : game.initializeGame}>
+                                    {game.isOnline ? 'Vote Rematch' : 'Play Again'}
+                                </button>
+                                <button className="play-again-btn" onClick={onQuit} style={{ marginTop: 0, background: 'rgba(0,0,0,0.5)', border: '2px solid rgba(255,255,255,0.2)' }}>Menu</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -268,3 +300,4 @@ export const GameBoard = ({ playerCount, startingCards, onQuit }) => {
         </div>
     );
 };
+

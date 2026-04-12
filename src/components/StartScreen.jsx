@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './StartScreen.css';
 
-export const StartScreen = ({ onStart }) => {
+export const StartScreen = ({ onStart, onStartOnline }) => {
     const [mode, setMode] = useState(null);
     const [playerCount, setPlayerCount] = useState(4);
     const [startingCards, setStartingCards] = useState(7);
@@ -60,14 +60,16 @@ export const StartScreen = ({ onStart }) => {
                     </div>
                 ) : (
                     <>
-                        <div className="mode-selection">
-                            <button className={`mode-btn ${mode === 'offline' ? 'active' : ''}`} onClick={() => setMode('offline')}>
-                                🕹️ Play Offline (Bots)
-                            </button>
-                            <button className="mode-btn disabled" title="Coming soon!" onClick={() => alert("Online mode is currently disabled in this version.")}>
-                                🌐 Play Online (Multiplayer)
-                            </button>
-                        </div>
+                        {!mode && (
+                            <div className="mode-selection">
+                                <button className={`mode-btn ${mode === 'offline' ? 'active' : ''}`} onClick={() => setMode('offline')}>
+                                    🕹️ Play Offline (Bots)
+                                </button>
+                                <button className="mode-btn online" onClick={onStartOnline}>
+                                    🌐 Play Online (Multiplayer)
+                                </button>
+                            </div>
+                        )}
 
                         {mode === 'offline' && (
                             <div className="player-count-config">
@@ -96,7 +98,11 @@ export const StartScreen = ({ onStart }) => {
                                     START GAME
                                 </button>
 
+
                                 <div style={{ display: 'flex', justifyContent: 'center', gap: '25px', marginTop: '20px' }}>
+                                    <button className="back-btn" onClick={() => setMode(null)}>
+                                        ← Back
+                                    </button>
                                     <button className="history-toggle-btn" style={{ marginTop: 0 }} onClick={() => setShowRules(true)}>
                                         📖 Game Rules
                                     </button>
@@ -113,6 +119,7 @@ export const StartScreen = ({ onStart }) => {
                                 </div>
                             </div>
                         )}
+
                     </>
                 )}
             </div>

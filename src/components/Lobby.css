@@ -1,0 +1,208 @@
+.lobby-container, .room-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 30px;
+    color: white;
+    text-align: center;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.lobby-container h1, .room-container h1 {
+    font-size: 3rem;
+    margin-bottom: 30px;
+    background: linear-gradient(45deg, #ff5555, #5555ff, #55ff55, #ffff55);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.player-setup {
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.player-setup input {
+    padding: 12px 20px;
+    border-radius: 12px;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 1.1rem;
+    width: 250px;
+    transition: all 0.3s ease;
+}
+
+.player-setup input:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 15px rgba(255,255,255,0.1);
+}
+
+.lobby-main {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 30px;
+    text-align: left;
+}
+
+.room-list, .create-room {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 25px;
+    border-radius: 20px;
+    min-height: 400px;
+}
+
+.rooms-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+    max-height: 350px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.room-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    transition: transform 0.2s ease;
+}
+
+.room-card:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.room-info h3 {
+    margin: 0 0 5px 0;
+    color: var(--uno-yellow);
+}
+
+.join-btn, .create-btn, .start-game-btn {
+    padding: 12px 25px;
+    border-radius: 12px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.join-btn {
+    background: var(--uno-blue);
+    color: white;
+}
+
+.create-btn {
+    background: var(--uno-green);
+    color: white;
+    width: 100%;
+}
+
+.join-btn:hover, .create-btn:hover, .start-game-btn:hover {
+    filter: brightness(1.2);
+    transform: scale(1.05);
+}
+
+.join-btn:disabled {
+    background: #555;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.form-group {
+    margin: 20px 0;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    opacity: 0.8;
+}
+
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    border: none;
+}
+
+.error-msg {
+    background: rgba(255, 85, 85, 0.2);
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    color: #ff8888;
+}
+
+/* Room styles */
+.players-list {
+    list-style: none;
+    padding: 0;
+}
+
+.player-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: rgba(255,255,255,0.05);
+    margin-bottom: 10px;
+    border-radius: 12px;
+}
+
+.player-item.empty {
+    opacity: 0.3;
+    border: 2px dashed rgba(255,255,255,0.1);
+    background: transparent;
+}
+
+.host-badge {
+    background: gold;
+    color: black;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.start-game-btn {
+    background: var(--uno-green);
+    color: white;
+    font-size: 1.5rem;
+    padding: 20px 50px;
+    margin-top: 30px;
+}
+
+.start-game-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.back-btn, .leave-btn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+    .lobby-main {
+        grid-template-columns: 1fr;
+    }
+}
