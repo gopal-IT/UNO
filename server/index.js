@@ -15,7 +15,7 @@ const io = new Server(httpServer, {
   cors: { origin: '*', methods: ['GET', 'POST'] }
 });
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 // ─── Game Logic (mirrored from client) ───────────────────────────────────────
 
