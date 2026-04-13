@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './StartScreen.css';
+import qrImage from '../assets/or.jpg';
 
 export const StartScreen = ({ onStart, onStartOnline }) => {
     const [mode, setMode] = useState(null);
@@ -8,6 +9,7 @@ export const StartScreen = ({ onStart, onStartOnline }) => {
     const [showHistory, setShowHistory] = useState(false);
     const [showRules, setShowRules] = useState(false);
     const [history, setHistory] = useState([]);
+    const [showQR, setShowQR] = useState(false);
 
 
     const clearHistory = () => {
@@ -21,7 +23,8 @@ export const StartScreen = ({ onStart, onStartOnline }) => {
             <div className="bg-card-2"></div>
 
             <div className="start-menu glass">
-                <h1 className="title">UNO <span className="title-offline">OFFLINE</span></h1>
+                <h1 className="title">UNO</h1>
+                <p className="tagline">"Simple Rules. Infinite Chaos."</p>
 
                 {showRules ? (
                     <div className="history-panel rules-panel">
@@ -121,6 +124,32 @@ export const StartScreen = ({ onStart, onStartOnline }) => {
                         )}
 
                     </>
+                )}
+
+                <div className="support-section">
+                    <button className="coffee-btn" onClick={() => setShowQR(true)}>
+                        <span>☕</span> Support the Creator
+                    </button>
+                </div>
+
+                {showQR && (
+                    <div className="qr-overlay" onClick={() => setShowQR(false)}>
+                        <div className="qr-modal glass" onClick={(e) => e.stopPropagation()}>
+                            <button className="qr-close" onClick={() => setShowQR(false)}>×</button>
+                            <h3>Support the Project</h3>
+                            <p>Scan the QR code to buy me a coffee! ☕</p>
+                            <div className="qr-container">
+                                {qrImage ? (
+                                    <img src={qrImage} alt="Donate QR Code" />
+                                ) : (
+                                    <div className="qr-placeholder">
+                                        <span className="qr-hint">QR Code Placeholder</span>
+                                    </div>
+                                )}
+                            </div>
+                            <button className="qr-back-btn" onClick={() => setShowQR(false)}>Close</button>
+                        </div>
+                    </div>
                 )}
             </div>
         </div>
